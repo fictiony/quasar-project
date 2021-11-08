@@ -24,19 +24,19 @@ const state = () => ({
   appVer: cfg.version, // 应用版本号
   appDesc: cfg.description, // 应用介绍
   appAuthor: cfg.author, // 应用作者
-  loading: false, // 是否显示加载等待（可为：true/false/
+  loading: false, // 是否显示加载等待（可为：true/false/提示信息）
 
   ...UI_STATE_INIT
 })
 
 // ----------------------------------------------------------------------------【getters】
 const getters = {
-  // UI最大缩放比率
+  // 界面最大缩放比率
   maxUIZoom (state) {
     return 2.0
   },
 
-  // UI最小缩放比率
+  // 界面最小缩放比率
   minUIZoom (state) {
     return 0.5
   }
@@ -44,6 +44,7 @@ const getters = {
 
 // ----------------------------------------------------------------------------【mutations】
 const mutations = {
+  ...genMutations(['loading']),
   ...genMutations(
     UI_STATE,
     debounce((name, val, state) => {
@@ -71,6 +72,13 @@ const actions = {
     UI_STATE.forEach(name => {
       commit(name, UI_STATE_INIT[name])
     })
+  },
+
+  // 缩放界面
+  // - @zoom 新缩放比率
+  async zoomUI ({ getters, commit }, zoom) {
+    zoom = Math.min(getters.maxUIZoom, Math.max(getters.minUIZoom, zoom))
+    commit('uiZoom', zoom)
   }
 }
 

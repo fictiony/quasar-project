@@ -119,8 +119,8 @@ export default {
   }),
 
   computed: {
-    ...mapState('main', ['appTitle', 'loading', 'maximized']),
-    ...mapStateRW('main', [...Object.keys(FLOAT_PANELS).filter(i => FLOAT_PANELS[i]), 'darkTheme', 'uiZoom']),
+    ...mapState('main', ['appTitle', 'loading', 'maximized', 'uiZoom']),
+    ...mapStateRW('main', ['darkTheme', ...Object.keys(FLOAT_PANELS).filter(i => FLOAT_PANELS[i])]),
     ...mapGetters('main', ['maxUIZoom', 'minUIZoom'])
   },
 
@@ -139,7 +139,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('main', ['resetUIState']),
+    ...mapActions('main', ['resetUIState', 'zoomUI']),
 
     // 鼠标滑过菜单自动弹出
     hoverMenu(name) {
@@ -162,12 +162,6 @@ export default {
     // 退出
     quit() {
       this.$appCall('quit')
-    },
-
-    // 缩放界面
-    // - @zoom 新缩放比率
-    zoomUI(zoom) {
-      this.uiZoom = Math.min(this.maxUIZoom, Math.max(this.minUIZoom, zoom))
     },
 
     // 重置UI布局
