@@ -19,8 +19,8 @@
     >
       <CustomMenu v-model="info.open" :items="$data[name]" :offset="[0, -2]" key-scope="main" />
     </q-btn>
-
     <div ref="stats" class="relative-position full-height" />
+
     <q-space />
 
     <q-btn class="no-drag-app q-px-xs" flat dense icon="minimize" @click="minimize" />
@@ -48,14 +48,38 @@ export default {
       helpMenu: { label: '帮助', open: false }
     },
     viewMenu: [
-      ...Object.keys(FLOAT_PANELS).map(
-        name =>
-          FLOAT_PANELS[name] && {
-            label: FLOAT_PANELS[name],
-            icon: () => (vm[name] ? 'done' : ''),
-            handler: () => (vm[name] = !vm[name])
-          }
-      ),
+      ...Object.keys(FLOAT_PANELS).map(name => {
+        const panel = FLOAT_PANELS[name]
+        if (!panel) return null
+        return {
+          label: panel[0],
+          icon: () => (vm[name] ? 'done' : ''),
+          shortcut: panel[1],
+          handler: () => (vm[name] = !vm[name])
+        }
+      }),
+      null,
+      {
+        label: '放大视图',
+        icon: 'zoom_in',
+        shortcut: 'Ctrl+=',
+        handler: () => vm.zoomView(vm.viewZoom * Math.SQRT2),
+        disable: () => vm.viewZoom >= vm.maxViewZoom
+      },
+      {
+        label: '缩小视图',
+        icon: 'zoom_out',
+        shortcut: 'Ctrl+-',
+        handler: () => vm.zoomView(vm.viewZoom * Math.SQRT1_2),
+        disable: () => vm.viewZoom <= vm.minViewZoom
+      },
+      {
+        label: '视图恢复1:1缩放',
+        icon: '1x_mobiledata',
+        shortcut: 'Ctrl+0',
+        handler: () => vm.zoomView(1),
+        disable: () => vm.viewZoom === 1
+      },
       null,
       {
         label: '放大界面',
@@ -119,9 +143,9 @@ export default {
   }),
 
   computed: {
-    ...mapState('main', ['appTitle', 'loading', 'maximized', 'uiZoom']),
-    ...mapStateRW('main', ['darkTheme', ...Object.keys(FLOAT_PANELS).filter(i => FLOAT_PANELS[i])]),
-    ...mapGetters('main', ['maxUIZoom', 'minUIZoom'])
+    ...mapState('main', ['appTitle', 'maximized', 'viewZoom', 'uiZoom']),
+    ...mapStateRW('main', ['loading', 'darkTheme', ...Object.keys(FLOAT_PANELS).filter(i => FLOAT_PANELS[i])]),
+    ...mapGetters('main', ['maxViewZoom', 'minViewZoom', 'maxUIZoom', 'minUIZoom'])
   },
 
   watch: {
@@ -139,7 +163,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('main', ['resetUIState', 'zoomUI']),
+    ...mapActions('main', ['resetUIState', 'zoomView', 'zoomUI']),
 
     // 鼠标滑过菜单自动弹出
     hoverMenu(name) {

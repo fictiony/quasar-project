@@ -2,19 +2,19 @@
   <div class="row items-center narrow">
     <label class="q-mr-sm" :class="labelClass" :style="combineLabelStyle" v-if="label">
       {{ label }}
-      <q-tooltip max-width="400px" anchor="top left" self="top right" v-if="tips">
-        <q-markdown :src="tips" v-if="mdTips" />
-        <template v-else>{{ tips }}</template>
-      </q-tooltip>
+      <CommonTips :tips="tips" v-if="tips" />
     </label>
-    <component ref="ctrl" :is="component" :class="ctrlClass" :style="combineCtrlStyle" v-bind="$attrs" v-on="$listeners" />
+    <component ref="ctrl" :is="component" :class="ctrlClass" :style="combineCtrlStyle" v-bind="combineParams" v-on="$listeners" />
     <slot />
   </div>
 </template>
 
 <script>
+import CommonTips from './CommonTips.vue'
+
 // 【通用表单控件】
 export default {
+  components: { CommonTips },
   inheritAttrs: false,
 
   props: {
@@ -22,14 +22,14 @@ export default {
     labelClass: [String, Array, Object], // 左侧文字标签样式
     labelStyle: Object,
     labelWidth: Number, // 左侧文字标签宽度
-    tips: String, // 提示说明文字
-    mdTips: Boolean, // 提示是否采用Markdown格式
+    tips: [String, Array], // 提示说明文字
     component: {
       // 控件所用组件（可为已注册的组件名、组件定义或组件类）
       required: true
     },
     ctrlClass: [String, Array, Object], // 控件样式
     ctrlStyle: Object,
+    ctrlParams: Object, // 控件参数表
     width: Number, // 控件最小宽度
     maxWidth: Number // 控件最大宽度
   },
@@ -50,6 +50,11 @@ export default {
         style.maxWidth = this.maxWidth + 'px'
       }
       return style
+    },
+
+    // 合并后的控件参数表
+    combineParams() {
+      return { ...this.$attrs, ...this.ctrlParams }
     }
   }
 }

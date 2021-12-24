@@ -11,6 +11,7 @@ const UI_STATE_INIT = {
   // xxxPanelFloat: false, // xxx面板是否浮动
   // xxxPanelFold: false, // xxx面板是否收拢
   // xxxPanelRect: { x: 100, y: 100, width: 350, height: 400 }, // xxx面板位置大小
+  viewZoom: 1.0, // 视图缩放比率
   uiZoom: 1.0 // 界面缩放比率
 }
 const UI_STATE = Object.keys(UI_STATE_INIT)
@@ -31,6 +32,16 @@ const state = () => ({
 
 // ----------------------------------------------------------------------------【getters】
 const getters = {
+  // 视图最大缩放比率
+  maxViewZoom (state) {
+    return 2.0
+  },
+
+  // 视图最小缩放比率
+  minViewZoom (state) {
+    return 0.05
+  },
+
   // 界面最大缩放比率
   maxUIZoom (state) {
     return 2.0
@@ -72,6 +83,13 @@ const actions = {
     UI_STATE.forEach(name => {
       commit(name, UI_STATE_INIT[name])
     })
+  },
+
+  // 缩放视图
+  // - @zoom 新缩放比率
+  async zoomView ({ getters, commit }, zoom) {
+    zoom = Math.min(getters.maxViewZoom, Math.max(getters.minViewZoom, zoom))
+    commit('viewZoom', zoom)
   },
 
   // 缩放界面

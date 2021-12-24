@@ -3,6 +3,7 @@ import { mapState, mapMutations } from 'vuex'
 import axios from 'axios'
 import {
   extend,
+  morph,
   Notify,
   Dialog,
   LocalStorage,
@@ -651,6 +652,9 @@ Vue.prototype.$getNested = getNested
 
 // 文本突显
 export function B (text, color = 'red') {
+  if (color.startsWith('#')) {
+    return ` <b style="color:${color}">${text}</b> `
+  }
   return ` <b class="text-${color}">${text}</b> `
 }
 
@@ -667,7 +671,7 @@ export function notify (message, type = 'info', params = {}) {
 }
 Vue.prototype.$notify = notify
 Notify.registerType('info', {
-  position: 'top',
+  position: 'bottom',
   html: true,
   icon: 'info',
   color: 'grey-1',
@@ -675,7 +679,7 @@ Notify.registerType('info', {
   timeout: 2000
 })
 Notify.registerType('warn', {
-  position: 'top',
+  position: 'bottom',
   html: true,
   icon: 'warning',
   color: 'red-8',
@@ -746,6 +750,32 @@ export function showDlg (content, title = null, model = true, params = {}) {
   })
 }
 Vue.prototype.$showDlg = showDlg
+
+// 形变过渡
+// - @target 目标对象（可为vue组件或DOM元素）
+// - @onToggle 切换函数（取消时会再次执行，并带参数true）
+// - @autoCancel 是否自动处理取消（形变时会在target上添加一个cancel回调，若下次形变过早触发则自动调用取消）
+// - @options 其他选项参数表
+export function tween (target, onToggle, autoCancel, options) {
+  if (target.__tweenCancel && target.__tweenCancel()) return
+  options = {
+    from: target.$el || target,
+    onToggle,
+    ...options
+  }
+  if (autoCancel) {
+    const onEnd = options.onEnd
+    options.onEnd = end => {
+      delete target.__tweenCancel
+      end === 'from' && onToggle(true)
+      onEnd && onEnd(end)
+    }
+    target.__tweenCancel = morph(options)
+  } else {
+    morph(options)
+  }
+}
+Vue.prototype.$tween = tween
 
 // ----------------------------------------------------------------------------【Electron相关】
 

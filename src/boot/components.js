@@ -1,6 +1,9 @@
 import Vue from 'vue'
 
 // 第三方组件
+// import Plugin from '@quasar/quasar-ui-qmarkdown'
+// import '@quasar/quasar-ui-qmarkdown/dist/index.css'
+// Vue.use(Plugin)
 // import { QEditableTd, QSelectableTd } from 'components/thirdparty/qmodeltd'
 // import { MySplitter, MyDrawer } from 'components/thirdparty/plus'
 // import QLayoutNoScroll from 'components/thirdparty/QLayoutNoScroll'
@@ -15,10 +18,10 @@ import {
   // CommonList,
   // CommonArray,
   CommonBtn,
-  // CommonCtrl,
-  CommonInput
+  CommonCtrl,
+  CommonInput,
   // TextInput,
-  // NumInput,
+  NumInput
   // FileInput
 } from 'components/custom/form'
 
@@ -41,10 +44,10 @@ const components = {
   // CommonList,
   // CommonArray,
   CommonBtn,
-  // CommonCtrl,
-  CommonInput
+  CommonCtrl,
+  CommonInput,
   // TextInput,
-  // NumInput,
+  NumInput
   // FileInput,
 }
 Object.keys(components).forEach(name => {

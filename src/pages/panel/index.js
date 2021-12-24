@@ -22,6 +22,8 @@ export function showFloatPanel (name) {
     resizable: true,
     okBtn: false,
     cancelBtn: false,
+    transitionShow: '',
+    transitionHide: '',
     ...Vue.store.state.main[name + 'PanelRect'],
     ...FLOAT_PANEL_PARAMS[name]
   })
